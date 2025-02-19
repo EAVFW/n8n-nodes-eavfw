@@ -1,0 +1,17 @@
+{
+  "compilerOptions": {
+    "lib": ["es2019", "es2020", "es2022.error"],
+    "module": "commonjs",
+    "moduleResolution": "node",
+    "outDir": ".n8n/custom",
+    "target": "es2019",
+    "strict": true,
+    "esModuleInterop": true,
+    "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "resolveJsonModule": true,
+    "useUnknownInCatchVariables": false
+  },
+  "include": ["credentials/**/*", "nodes/**/*", "nodes/**/*.json"],
+  "exclude": ["node_modules/**/*", "dist/**/*"]
+}
