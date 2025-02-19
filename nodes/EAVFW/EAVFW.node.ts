@@ -289,7 +289,7 @@ async function getToken(
     this: ILoadOptionsFunctions | IExecuteFunctions,
     credentials: ICredentialDataDecryptedObject,
 ): Promise<string> {
-    const { tokenUrl, clientId, clientSecret, scope } = credentials;
+    const { tokenUrl, clientId, clientSecret } = credentials;
 
     const options: IHttpRequestOptions = {
         method: 'POST',
