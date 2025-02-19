@@ -51,5 +51,8 @@
     "n8n-workflow": "^1.33.1",
     "prettier": "^3.2.5",
     "typescript": "~4.9.5"
+  },
+  "publishConfig": {
+    "access": "public"
   }
 }
