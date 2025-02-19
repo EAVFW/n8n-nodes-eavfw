@@ -1,5 +1,5 @@
 {
-  "name": "n8n-nodes-eavfw",
+  "name": "@eavfw/n8n-nodes-eavfw",
   "version": "1.0.0",
   "description": "EAVFW nodes for n8n",
   "keywords": [
