@@ -1,3 +1,10 @@
+## [1.0.4](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.3...v1.0.4) (2025-02-21)
+
+
+### Bug Fixes
+
+* try another name ([4d11b07](https://github.com/EAVFW/n8n-nodes-eavfw/commit/4d11b0749c205b90d03313034f7d8fd7f972fa14))
+
 ## [1.0.3](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.2...v1.0.3) (2025-02-21)
 
 
