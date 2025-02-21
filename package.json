@@ -26,15 +26,15 @@
     "prepublishOnly": "npm run build && npm run lint -c .eslintrc.js"
   },
   "files": [
-    ".n8n/custom"
+    "dist"
   ],
   "n8n": {
     "n8nNodesApiVersion": 1,
     "credentials": [
-      ".n8n/custom/credentials/EAVFWOAuth2Api.credentials.js"
+      "dist/credentials/EAVFWOAuth2Api.credentials.js"
     ],
     "nodes": [
-      ".n8n/custom/nodes/EAVFW/EAVFW.node.js"
+      "dist/nodes/EAVFW/EAVFW.node.js"
     ]
   },
   "devDependencies": {
