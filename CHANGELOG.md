@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.1...v1.0.2) (2025-02-21)
+
+
+### Bug Fixes
+
+* lets try dist folder ([f6fd208](https://github.com/EAVFW/n8n-nodes-eavfw/commit/f6fd2081dbd89d8c36a9c64b01f83987a6f00c56))
+
 ## [1.0.1](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.0...v1.0.1) (2025-02-21)
 
 
