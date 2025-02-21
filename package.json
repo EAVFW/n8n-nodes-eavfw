@@ -1,5 +1,5 @@
 {
-  "name": "@eavfw/n8n-nodes-eavfw",
+  "name": "n8n-nodes-eavfw",
   "version": "1.0.1",
   "description": "EAVFW nodes for n8n",
   "keywords": [
@@ -15,7 +15,6 @@
     "type": "git",
     "url": ""
   },
-  "main": "index.js",
   "scripts": {
     "build": "tsc && gulp build:icons",
     "dev": "tsc --watch",
