@@ -1,3 +1,11 @@
+## [1.0.3](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.2...v1.0.3) (2025-02-21)
+
+
+### Bug Fixes
+
+* merged ([c3492d2](https://github.com/EAVFW/n8n-nodes-eavfw/commit/c3492d2ac040bbeb7d9e15e76d04bf405344d116))
+* try without ([4c8f445](https://github.com/EAVFW/n8n-nodes-eavfw/commit/4c8f445573ad32fbba4466f82c34f2018b1125f6))
+
 ## [1.0.2](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.1...v1.0.2) (2025-02-21)
 
 
