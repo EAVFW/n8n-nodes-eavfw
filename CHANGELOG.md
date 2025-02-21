@@ -1,3 +1,10 @@
+## [1.0.1](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.0...v1.0.1) (2025-02-21)
+
+
+### Bug Fixes
+
+* lets try if we can bump to 1.0.1 ([a6f9554](https://github.com/EAVFW/n8n-nodes-eavfw/commit/a6f9554a3b4d75eca9dcf05e53df1befa07cd75f))
+
 # 1.0.0 (2025-02-21)
 
 
