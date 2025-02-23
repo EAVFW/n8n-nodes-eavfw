@@ -1,3 +1,10 @@
+## [1.1.3](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.1.2...v1.1.3) (2025-02-23)
+
+
+### Bug Fixes
+
+* path for node fixed ([3f9fe4f](https://github.com/EAVFW/n8n-nodes-eavfw/commit/3f9fe4fdda5ad03a61a83702cc2063c3f99c02e1))
+
 ## [1.1.2](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.1.1...v1.1.2) (2025-02-23)
 
 
