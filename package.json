@@ -33,7 +33,8 @@
       "dist/credentials/EAVFWOAuth2Api.credentials.js"
     ],
     "nodes": [
-      "dist/nodes/EAVFW/EAVFW.node.js"
+      "dist/nodes/EAVFW/CreateRecord.node.js",
+      "dist/nodes/EAVFW/UpsertRecord.node.js"
     ]
   },
   "devDependencies": {
