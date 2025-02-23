@@ -85,7 +85,7 @@ export async function execute_create(this: IExecuteFunctions): Promise<INodeExec
             payload = JSON.parse(jsonString);
 
             // Optional: validate fields against manifest
-            for (const [key, value] of Object.entries(payload)) {
+            for (const [key] of Object.entries(payload)) {
                 const fieldInfo = Object.entries<EAVFWAttribute>(entityInfo.attributes)
                     .find(([_, attr]) => attr.logicalName === key || (attr.type.type === "lookup" && attr.logicalName === key + "id"));
 

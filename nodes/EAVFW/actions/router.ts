@@ -1,15 +1,11 @@
 import { IExecuteFunctions, INodeExecutionData, NodeExecutionWithMetadata } from "n8n-workflow";
-import { EAVFW } from "./node.type";
 import { execute_create } from "./create/execute";
-import { execute_upsert } from "./upsert/execute";
 import { execute_query } from "./query/execute";
+import { execute_upsert } from "./upsert/execute";
 
 
 export async function router(this: IExecuteFunctions): Promise<INodeExecutionData[][] | NodeExecutionWithMetadata[][] | null> {
-	const items = this.getInputData();
-	const returnData: INodeExecutionData[] = [];
-
-	const resource = this.getNodeParameter('table', 0) as string;
+	 
 	const operation = this.getNodeParameter('operation', 0);
 
 
