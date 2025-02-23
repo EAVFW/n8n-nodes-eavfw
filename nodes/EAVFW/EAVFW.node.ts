@@ -1,6 +1,31 @@
-import { INodeType, INodeTypeDescription, NodeConnectionType, ILoadOptionsFunctions, INodePropertyOptions, IDataObject, IHttpRequestOptions, IExecuteFunctions, ICredentialDataDecryptedObject, INodeExecutionData } from 'n8n-workflow';
+import { INodeType, INodeTypeDescription, NodeConnectionType, ILoadOptionsFunctions, INodePropertyOptions, IDataObject, IHttpRequestOptions, IExecuteFunctions, ICredentialDataDecryptedObject, INodeExecutionData, IGetNodeParameterOptions } from 'n8n-workflow';
 
+
+
+interface TokenCacheData {
+    token: string;
+    expiresAt: number;
+}
+interface EAVFWAttribute {
+    displayName: string;
+    description: string;
+    logicalName: string;
+    type: {
+        type: string;
+    }
+}
 export class EAVFW implements INodeType {
+
+    // Add a static property to store manifest data
+    static manifestCache: Map<string, {
+        timestamp: number,
+        data: any
+    }> = new Map();
+
+
+    static tokenCache: Map<string, TokenCacheData> = new Map();
+
+
     description: INodeTypeDescription = {
         displayName: 'EAVFW',
         name: 'EAVFW',
@@ -51,12 +76,30 @@ export class EAVFW implements INodeType {
                 description: 'The table to create a record in',
             },
             {
+                displayName: 'Input Type',
+                name: 'inputType',
+                type: 'options',
+                options: [
+                    {
+                        name: 'Field Builder',
+                        value: 'fieldBuilder',
+                    },
+                    {
+                        name: 'JSON',
+                        value: 'json',
+                    },
+                ],
+                default: 'fieldBuilder',
+                description: 'Choose how to input the data',
+            },
+            {
                 displayName: 'Fields',
                 name: 'fields',
                 type: 'fixedCollection',
                 displayOptions: {
                     show: {
                         operation: ['create_record'],
+                        inputType: ['fieldBuilder'],
                     },
                 },
                 typeOptions: {
@@ -90,21 +133,34 @@ export class EAVFW implements INodeType {
                     },
                 ],
             },
+            // JSON input option
+            {
+                displayName: 'JSON Payload',
+                name: 'jsonPayload',
+                type: 'json',
+                displayOptions: {
+                    show: {
+                        operation: ['create_record'],
+                        inputType: ['json'],
+                    },
+                },
+                default: '{}',
+                description: 'The JSON payload to send. Field names should match the logical names from the manifest.',
+                typeOptions: {
+                    loadOptionsDependsOn: ['table'],
+                },
+            },
         ],
     };
 
     methods = {
         loadOptions: {
             async getTables(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-                const url = 'https://quizzical-chebyshev-000.env.medlemscentralen.dk/api/manifest';
+                const credentials = await this.getCredentials('eavfwOAuth2Api');
+                const environmentUrl = credentials.environmentUrl as string;
 
                 try {
-                    const response = await this.helpers.request({
-                        method: 'GET',
-                        url,
-                        json: true,
-                    });
-
+                    const response = await getManifest.call(this, environmentUrl, await getTokenWithCache.call(this, credentials));
                     const entities = response.entities;
 
                     const options: INodePropertyOptions[] = Object.entries(entities).map(([key, value]: [string, any]) => ({
@@ -121,16 +177,12 @@ export class EAVFW implements INodeType {
             },
 
             async getFields(this: ILoadOptionsFunctions): Promise<INodePropertyOptions[]> {
-                const url = 'https://quizzical-chebyshev-000.env.medlemscentralen.dk/api/manifest';
+                const credentials = await this.getCredentials('eavfwOAuth2Api');
+                const environmentUrl = credentials.environmentUrl as string;
                 const selectedTable = this.getCurrentNodeParameter('table') as string;
 
                 try {
-                    const response = await this.helpers.request({
-                        method: 'GET',
-                        url,
-                        json: true,
-                    });
-
+                    const response = await getManifest.call(this, environmentUrl, await getTokenWithCache.call(this, credentials));
                     const entity = response.entities[selectedTable];
 
                     if (!entity || !entity.attributes) {
@@ -154,12 +206,13 @@ export class EAVFW implements INodeType {
                     return [];
                 }
             },
-           
+
         },
 
-        
     };
 
+
+     
     async execute(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
         const items = this.getInputData();
         const returnData: INodeExecutionData[] = [];
@@ -167,77 +220,103 @@ export class EAVFW implements INodeType {
         try {
             // Get credentials
             const credentials = await this.getCredentials('eavfwOAuth2Api');
-            const token = await getToken.call(this, credentials);
+            const environmentUrl = credentials.environmentUrl as string;
+            const token = await getTokenWithCache.call(this, credentials);
+
+            // Get the manifest to find the collectionSchemaName
+            const manifestResponse = await getManifest.call(this, environmentUrl, token);
+
+
 
             // Process each item
             for (let i = 0; i < items.length; i++) {
                 try {
                     // Get selected table and fields
                     const table = this.getNodeParameter('table', i) as string;
-                    const fields = this.getNodeParameter('fields.field', i, []) as Array<{ fieldName: string; value: string }>;
-
-                    // Get the manifest to find the collectionSchemaName
-                    const manifestResponse = await this.helpers.request({
-                        method: 'GET',
-                        url: 'https://quizzical-chebyshev-000.env.medlemscentralen.dk/api/manifest',
-                        headers: {
-                            'Authorization': `Bearer ${token}`,
-                        },
-                        json: true,
-                    });
+                    const inputType = this.getNodeParameter('inputType', i) as string;
 
                     const entityInfo = manifestResponse.entities[table];
                     if (!entityInfo) {
                         throw new Error(`Entity ${table} not found in manifest`);
                     }
-
-                    const collectionSchemaName = entityInfo.collectionSchemaName;
-
                     // Prepare the payload
-                    const payload: IDataObject = {};
+                    let payload: IDataObject = {};
 
-                    // Convert fields array to proper payload format
-                    fields.forEach((field) => {
-                        // Get the logical name of the field from manifest
-                        const fieldInfo = entityInfo.attributes[field.fieldName];
-                        if (!fieldInfo) {
-                            throw new Error(`Field ${field.fieldName} not found in entity ${table}`);
+                    if (inputType === 'fieldBuilder') {
+                        const fields = this.getNodeParameter('fields.field', i, []) as Array<{ fieldName: string; value: string }>;
+
+
+
+
+
+
+
+                        // Convert fields array to proper payload format
+                        fields.forEach((field) => {
+                            // Get the logical name of the field from manifest
+                            const fieldInfo = entityInfo.attributes[field.fieldName];
+                            if (!fieldInfo) {
+                                throw new Error(`Field ${field.fieldName} not found in entity ${table}`);
+                            }
+
+                            const logicalName = fieldInfo.logicalName;
+
+                            // Convert value based on field type
+                            let value: any = field.value;
+                            switch (fieldInfo.type.type.toLowerCase()) {
+                                case 'integer':
+                                    value = parseInt(field.value);
+                                    break;
+                                case 'decimal':
+                                case 'float':
+                                    value = parseFloat(field.value);
+                                    break;
+                                case 'boolean':
+                                    value = field.value.toLowerCase() === 'true';
+                                    break;
+                                case 'datetime':
+                                    value = new Date(field.value).toISOString();
+                                    break;
+                                case 'lookup':
+                                    // Handle lookup fields - expecting a GUID
+                                    if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(field.value)) {
+                                        throw new Error(`Invalid GUID format for lookup field ${field.fieldName}`);
+                                    }
+                                    break;
+                                // Add more type conversions as needed
+                            }
+
+                            payload[logicalName] = value;
+                        });
+
+                    } else {
+                        // JSON input logic
+                        const jsonString = this.getNodeParameter('jsonPayload', i) as string;
+                        payload = JSON.parse(jsonString);
+
+                        // Validate the payload against manifest
+                        const manifestResponse = await getManifest.call(this, environmentUrl, token);
+                        const entityInfo = manifestResponse.entities[table];
+
+                        // Optional: validate fields against manifest
+                        for (const [key, value] of Object.entries(payload)) {
+                            const fieldInfo = Object.entries<EAVFWAttribute>(entityInfo.attributes)
+                                .find(([_, attr]) => attr.logicalName === key || (attr.type.type === "lookup" && attr.logicalName === key+"id"));
+
+                            if (!fieldInfo) {
+                                throw new Error(`Field ${key} not found in entity ${table}`);
+                            }
+
+                            // Could add type validation here if needed
                         }
 
-                        const logicalName = fieldInfo.logicalName;
+                    }
 
-                        // Convert value based on field type
-                        let value: any = field.value;
-                        switch (fieldInfo.type.type.toLowerCase()) {
-                            case 'integer':
-                                value = parseInt(field.value);
-                                break;
-                            case 'decimal':
-                            case 'float':
-                                value = parseFloat(field.value);
-                                break;
-                            case 'boolean':
-                                value = field.value.toLowerCase() === 'true';
-                                break;
-                            case 'datetime':
-                                value = new Date(field.value).toISOString();
-                                break;
-                            case 'lookup':
-                                // Handle lookup fields - expecting a GUID
-                                if (!/^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(field.value)) {
-                                    throw new Error(`Invalid GUID format for lookup field ${field.fieldName}`);
-                                }
-                                break;
-                            // Add more type conversions as needed
-                        }
-
-                        payload[logicalName] = value;
-                    });
 
                     // Make the API call
                     const response = await this.helpers.request({
                         method: 'POST',
-                        url: `https://quizzical-chebyshev-000.env.medlemscentralen.dk/api/entities/${collectionSchemaName}/records`,
+                        url: `${environmentUrl}/api/entities/${entityInfo.collectionSchemaName}/records`,
                         headers: {
                             'Authorization': `Bearer ${token}`,
                             'Content-Type': 'application/json',
@@ -245,12 +324,11 @@ export class EAVFW implements INodeType {
                         body: payload,
                         json: true,
                     });
-                  
+
                     returnData.push({
                         json: {
                             success: true,
                             data: response,
-                            fields,
                             table,
                             payload,
                         },
@@ -261,7 +339,7 @@ export class EAVFW implements INodeType {
                         returnData.push({
                             json: {
                                 success: false,
-                                error: error.message,                                
+                                error: error.message,
                                 payload: error.payload,
                                 response: error.response,
                             },
@@ -284,31 +362,139 @@ export class EAVFW implements INodeType {
 }
 
 
-// Separate function for getting the token
-async function getToken(
+// Add a method to handle manifest fetching with caching
+async function getManifest(
+    this: ILoadOptionsFunctions | IExecuteFunctions,
+    environmentUrl: string,
+    token: string
+): Promise<any> {
+    const CACHE_DURATION = 1000 * 60 * 60; // 1 hour in milliseconds
+    const cacheKey = environmentUrl;
+    const cachedData = EAVFW.manifestCache.get(cacheKey);
+
+    // Check if we have valid cached data
+    if (cachedData && (Date.now() - cachedData.timestamp) < CACHE_DURATION) {
+        return cachedData.data;
+    }
+
+    // If no cache or expired, fetch new data
+    const headers: Record<string, string> = {
+        'Content-Type': 'application/json',
+    };
+
+    if (token) {
+        headers['Authorization'] = `Bearer ${token}`;
+    }
+
+    const response = await this.helpers.request({
+        method: 'GET',
+        url: `${environmentUrl}/api/manifest`,
+        headers,
+        json: true,
+    });
+
+    // Store in cache
+    EAVFW.manifestCache.set(cacheKey, {
+        timestamp: Date.now(),
+        data: response,
+    });
+
+    return response;
+}
+
+
+// Get token with caching
+async function getTokenWithCache(
     this: ILoadOptionsFunctions | IExecuteFunctions,
     credentials: ICredentialDataDecryptedObject,
 ): Promise<string> {
-    const { tokenUrl, clientId, clientSecret } = credentials;
+    const { environmentUrl, clientId, clientSecret } = credentials;
+    const cacheKey = `${environmentUrl}:${clientId}`; // Use combination of URL and clientId as cache key
+
+    // Check cache first
+    const cachedToken = EAVFW.tokenCache.get(cacheKey);
+    if (cachedToken && Date.now() < cachedToken.expiresAt) {
+        return cachedToken.token;
+    }
+
+    // If no valid cached token, get a new one
+    const tokenUrl = `${environmentUrl}/connect/token`;
 
     const options: IHttpRequestOptions = {
         method: 'POST',
-        url: tokenUrl as string,
+        url: tokenUrl,
         headers: {
             'Content-Type': 'application/x-www-form-urlencoded',
             authorization: `Basic ${btoa(clientId + ':' + clientSecret)}`,
-        },       
+        },
         body: 'grant_type=client_credentials'
     };
 
     try {
         const response = await this.helpers.request(options);
         const data = JSON.parse(response);
+
+        // Cache the token
+        // Subtract 5 minutes from expiry to be safe
+        const expiresIn = (data.expires_in || 3600) * 1000; // Convert to milliseconds
+        const expiresAt = Date.now() + expiresIn - (5 * 60 * 1000); // Current time + expiry - 5 minutes
+
+        EAVFW.tokenCache.set(cacheKey, {
+            token: data.access_token,
+            expiresAt,
+        });
+
         return data.access_token;
     } catch (error) {
         throw new Error(`OAuth2 authentication failed: ${error.message}`);
     }
 }
 
+
+async function generateDefaultJsonData(
+    this: ILoadOptionsFunctions | IExecuteFunctions,
+    table: string,
+    manifest: any
+): Promise<string> {
+    const entityInfo = manifest.entities[table];
+    if (!entityInfo || !entityInfo.attributes) {
+        return '{}';
+    }
+
+    const exampleData: Record<string, any> = {};
+
+    // Generate example values based on attribute types
+    for (const [key, attr] of Object.entries<EAVFWAttribute>(entityInfo.attributes)) {
+
+
+        const logicalName = attr.logicalName;
+
+        // Generate appropriate example values based on type
+        switch (attr.type.type.toLowerCase()) {
+            case 'string':
+                exampleData[logicalName] = `Example ${attr.displayName || key}`;
+                break;
+            case 'integer':
+                exampleData[logicalName] = 42;
+                break;
+            case 'decimal':
+            case 'float':
+                exampleData[logicalName] = 42.42;
+                break;
+            case 'boolean':
+                exampleData[logicalName] = false;
+                break;
+            case 'datetime':
+                exampleData[logicalName] = new Date().toISOString();
+                break;
+            case 'lookup':
+                exampleData[logicalName] = "00000000-0000-0000-0000-000000000000";
+                break;
+            // Add more types as needed
+        }
+    }
+
+    return JSON.stringify(exampleData, null, 2);
+}
 
 export default EAVFW;

@@ -10,11 +10,12 @@ export class EAVFWOAuth2Api implements ICredentialType {
 	documentationUrl = 'https://your-api-docs-url';
 	properties: INodeProperties[] = [
 		{
-			displayName: 'Token URL',
-			name: 'tokenUrl',
+			displayName: 'Environment URL',
+			name: 'environmentUrl',
 			type: 'string',
-			default: 'https://quizzical-chebyshev-000.env.medlemscentralen.dk/connect/token',
+			default: 'https://quizzical-chebyshev-000.env.medlemscentralen.dk',
 			required: true,
+			description: 'The base URL of your EAVFW environment',
 		},
 		{
 			displayName: 'Client ID',
