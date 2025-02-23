@@ -1,3 +1,15 @@
+# [1.2.0](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.1.3...v1.2.0) (2025-02-23)
+
+
+### Bug Fixes
+
+* release real package name ([0bc9d3f](https://github.com/EAVFW/n8n-nodes-eavfw/commit/0bc9d3fd963c3f26cab12e9a05624fc0f9d743c2))
+
+
+### Features
+
+* changed to @eavfw/n8n-nodes-eavfw again ([6b17bd4](https://github.com/EAVFW/n8n-nodes-eavfw/commit/6b17bd4792f4737ad386357ba297228f4af4285a))
+
 ## [1.1.3](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.1.2...v1.1.3) (2025-02-23)
 
 
