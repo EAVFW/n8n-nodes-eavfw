@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.1.0...v1.1.1) (2025-02-23)
+
+
+### Bug Fixes
+
+* removed old files ([4977636](https://github.com/EAVFW/n8n-nodes-eavfw/commit/4977636ed61dc6c208489df19b8091e98d4bd497))
+
 # [1.1.0](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.4...v1.1.0) (2025-02-23)
 
 
