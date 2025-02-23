@@ -1,3 +1,15 @@
+# [1.1.0](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.4...v1.1.0) (2025-02-23)
+
+
+### Bug Fixes
+
+* added json field builder ([b24c5b4](https://github.com/EAVFW/n8n-nodes-eavfw/commit/b24c5b40f943b6ce3d7f5a849b7503e3efa8cede))
+
+
+### Features
+
+* refactored and added upsert support ([a5eb2a4](https://github.com/EAVFW/n8n-nodes-eavfw/commit/a5eb2a43baab9be8e4ca52d2265871ef578485db))
+
 ## [1.0.4](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.0.3...v1.0.4) (2025-02-21)
 
 
