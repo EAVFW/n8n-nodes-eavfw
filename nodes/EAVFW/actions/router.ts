@@ -5,7 +5,7 @@ import { execute_upsert } from "./upsert/execute";
 
 
 export async function router(this: IExecuteFunctions): Promise<INodeExecutionData[][] | NodeExecutionWithMetadata[][] | null> {
-	 
+	console.log('Executing router: ', this.getNodeInputs()); 
 	const operation = this.getNodeParameter('operation', 0);
 
 
