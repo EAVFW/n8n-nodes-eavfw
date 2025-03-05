@@ -1,3 +1,10 @@
+# [1.3.0](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.3...v1.3.0) (2025-03-05)
+
+
+### Features
+
+* included proper logging ([dd23d03](https://github.com/EAVFW/n8n-nodes-eavfw/commit/dd23d035b341bb8454c3265c2230d1859be4b8a1))
+
 ## [1.2.3](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.2...v1.2.3) (2025-03-05)
 
 
