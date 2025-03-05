@@ -81,10 +81,10 @@ export async function execute_upsert(this: IExecuteFunctions): Promise<INodeExec
                     });
                 } else {
                     // JSON input logic
-                    const jsonString = this.getNodeParameter('jsonPayload', i) as string;
-                    LoggerProxy.info(`Processing JSON payload: ${jsonString}`);
-                    payload = JSON.parse(jsonString);
-
+                    const jsonString = this.getNodeParameter('jsonPayload', i) as string |object;
+                   
+                    payload = typeof jsonString === "string" ? JSON.parse(jsonString): jsonString;
+                    LoggerProxy.info(`Processing JSON payload: ${JSON.stringify(payload)}`);
                     // Validate fields against manifest
                     for (const [key] of Object.entries(payload)) {
                         const fieldInfo = Object.entries<EAVFWAttribute>(entityInfo.attributes)
