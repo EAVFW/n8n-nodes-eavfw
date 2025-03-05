@@ -20,7 +20,7 @@ export class EAVFW implements INodeType {
             name: 'EAVFW',
         },
         inputs: [NodeConnectionType.Main],
-        outputs: [NodeConnectionType.Main],
+        outputs: [NodeConnectionType.Main], 
         subtitle: '={{$parameter["operation"] + ": " + $parameter["table"]}}',
         credentials: [
             {

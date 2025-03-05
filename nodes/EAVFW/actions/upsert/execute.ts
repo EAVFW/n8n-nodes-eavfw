@@ -32,7 +32,7 @@ export async function execute_upsert(this: IExecuteFunctions): Promise<INodeExec
                 // Get selected table and fields
                 const table = this.getNodeParameter('table', i) as string;
                 const inputType = this.getNodeParameter('inputType', i) as string;
-               
+                console.log(`Executing upsert for table '${table}' using inputtype ${inputType}`);
                 const entityInfo = manifestResponse.entities[table];
                 if (!entityInfo) {
                     throw new Error(`Entity ${table} not found in manifest`);
@@ -81,6 +81,7 @@ export async function execute_upsert(this: IExecuteFunctions): Promise<INodeExec
                 } else {
                     // JSON input logic
                     const jsonString = this.getNodeParameter('jsonPayload', i) as string;
+                    console.log(`Processing JSON payload: ${jsonString}`);
                     payload = JSON.parse(jsonString);
 
                     // Validate fields against manifest
@@ -99,6 +100,7 @@ export async function execute_upsert(this: IExecuteFunctions): Promise<INodeExec
 
                 if (this.getNodeParameter("search_builder", i) === "odata") {
                     searchParams.append(`$filter`, this.getNodeParameter("odata", i) as string);
+                    console.log(`Using OData search criteria: ${this.getNodeParameter("odata", i)}`);
                 } else {
                     const searchCriteria = this.getNodeParameter('searchCriteria.criteria', i, []) as Array<{ fieldName: string; value: string }>;
 
@@ -121,7 +123,7 @@ export async function execute_upsert(this: IExecuteFunctions): Promise<INodeExec
 
                     });
                 }
-
+                console.log(`Search parameters: ${searchParams.toString()}`);
                 // First try to find existing record
                 const searchResponse = await this.helpers.request({
                     method: 'GET',
