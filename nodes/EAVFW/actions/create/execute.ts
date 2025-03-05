@@ -1,4 +1,4 @@
-import { IExecuteFunctions, INodeExecutionData, IDataObject } from "n8n-workflow";
+import { IExecuteFunctions, INodeExecutionData, IDataObject, LoggerProxy } from "n8n-workflow";
 import { getTokenWithCache, getManifest } from "../../helpers";
 
 
@@ -13,6 +13,7 @@ interface EAVFWAttribute {
 }
 
 export async function execute_create(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+    LoggerProxy.info('Executing create');
     const items = this.getInputData();
     const returnData: INodeExecutionData[] = [];
 
@@ -31,6 +32,7 @@ export async function execute_create(this: IExecuteFunctions): Promise<INodeExec
         // Get selected table and fields
         const table = this.getNodeParameter('table', i) as string;
         const inputType = this.getNodeParameter('inputType', i) as string;
+        LoggerProxy.info(`Executing create for table '${table}' using inputtype ${inputType}`);
 
         const entityInfo = manifestResponse.entities[table];
         if (!entityInfo) {
@@ -82,6 +84,7 @@ export async function execute_create(this: IExecuteFunctions): Promise<INodeExec
         } else {
             // JSON input logic
             const jsonString = this.getNodeParameter('jsonPayload', i) as string;
+            LoggerProxy.info(`Processing JSON payload: ${jsonString}`);
             payload = JSON.parse(jsonString);
 
             // Optional: validate fields against manifest
@@ -96,6 +99,7 @@ export async function execute_create(this: IExecuteFunctions): Promise<INodeExec
         }
 
         // Make the API call
+        LoggerProxy.info(`Creating record with payload:`, { payload });
         const response = await this.helpers.request({
             method: 'POST',
             url: `${environmentUrl}/api/entities/${entityInfo.collectionSchemaName}/records`,
@@ -107,6 +111,7 @@ export async function execute_create(this: IExecuteFunctions): Promise<INodeExec
             json: true,
         });
 
+        LoggerProxy.info(`Create response:`, { response });
         returnData.push({
             json: {
                 success: true,

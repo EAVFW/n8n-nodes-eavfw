@@ -1,4 +1,4 @@
-import { IExecuteFunctions, INodeExecutionData } from "n8n-workflow";
+import { IExecuteFunctions, INodeExecutionData, LoggerProxy } from "n8n-workflow";
 
  
 
@@ -23,10 +23,10 @@ export async function execute_query(this: IExecuteFunctions): Promise<INodeExecu
                 //  const inputType = this.getNodeParameter('inputType', i) as string;
                 const searchCriteria = this.getNodeParameter('searchCriteria)', i, []);
 
-                console.log(searchCriteria);
+                LoggerProxy.info('Search criteria:', { searchCriteria });
             }
             catch (error) {
-                console.error('Error processing item:', error);
+                LoggerProxy.error('Error processing item:', { error });
             } 
         }
 

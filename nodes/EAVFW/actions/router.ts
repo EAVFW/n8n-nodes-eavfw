@@ -1,11 +1,11 @@
-import { IExecuteFunctions, INodeExecutionData, NodeExecutionWithMetadata } from "n8n-workflow";
+import { IExecuteFunctions, INodeExecutionData, NodeExecutionWithMetadata, LoggerProxy } from "n8n-workflow";
 import { execute_create } from "./create/execute";
 import { execute_query } from "./query/execute";
 import { execute_upsert } from "./upsert/execute";
 
 
 export async function router(this: IExecuteFunctions): Promise<INodeExecutionData[][] | NodeExecutionWithMetadata[][] | null> {
-	console.log('Executing router: ', this.getNodeInputs()); 
+LoggerProxy.info('Executing router: ', { inputs: this.getNodeInputs() });
 	const operation = this.getNodeParameter('operation', 0);
 
 
