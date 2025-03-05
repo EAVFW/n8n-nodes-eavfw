@@ -1,3 +1,10 @@
+## [1.2.2](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.1...v1.2.2) (2025-03-05)
+
+
+### Bug Fixes
+
+* added a log statement to beginning of execute ([4d5f3a6](https://github.com/EAVFW/n8n-nodes-eavfw/commit/4d5f3a6b3431064f200518227049a172e836cf7b))
+
 ## [1.2.1](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.0...v1.2.1) (2025-03-05)
 
 
