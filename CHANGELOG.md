@@ -1,3 +1,10 @@
+## [1.2.1](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.0...v1.2.1) (2025-03-05)
+
+
+### Bug Fixes
+
+* added some logging to upsert ([4e8d9ad](https://github.com/EAVFW/n8n-nodes-eavfw/commit/4e8d9adecf6d7c60ee19b63c8478146f147cf975))
+
 # [1.2.0](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.1.3...v1.2.0) (2025-02-23)
 
 
