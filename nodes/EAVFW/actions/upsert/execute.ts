@@ -14,6 +14,7 @@ interface EAVFWAttribute {
 
 
 export async function execute_upsert(this: IExecuteFunctions): Promise<INodeExecutionData[][]> {
+    console.log('Executing upsert');
     const items = this.getInputData();
     const returnData: INodeExecutionData[] = [];
 
