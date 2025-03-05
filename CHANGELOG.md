@@ -1,3 +1,10 @@
+## [1.3.1](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.3.0...v1.3.1) (2025-03-05)
+
+
+### Bug Fixes
+
+* upsert paramter is actualy json not string ([28d9625](https://github.com/EAVFW/n8n-nodes-eavfw/commit/28d9625c664bb4d4ff355a6a2c8097364bdec2c5))
+
 # [1.3.0](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.3...v1.3.0) (2025-03-05)
 
 
