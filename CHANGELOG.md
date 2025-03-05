@@ -1,3 +1,10 @@
+## [1.2.3](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.2...v1.2.3) (2025-03-05)
+
+
+### Bug Fixes
+
+* added logging to router ([223255a](https://github.com/EAVFW/n8n-nodes-eavfw/commit/223255acf667f57a94e22d1e04b25c5dca8b0cae))
+
 ## [1.2.2](https://github.com/EAVFW/n8n-nodes-eavfw/compare/v1.2.1...v1.2.2) (2025-03-05)
 
 
